@@ -1,0 +1,3 @@
+[submodule "libftpp"]
+	path = libftpp
+	url = https://github.com/mithraskuipers/libftpp.git
