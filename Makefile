@@ -6,11 +6,11 @@
 #    By: mikuiper <mikuiper@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2022/03/09 19:49:21 by mikuiper      #+#    #+#                  #
-#    Updated: 2022/03/22 23:38:52 by mikuiper      ########   odam.nl          #
+#    Updated: 2022/03/23 11:56:25 by mikuiper      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = fract-ol
+NAME = fractol
 
 CC = gcc
 FLAGS = -Wall -Werror -Wextra
@@ -65,16 +65,16 @@ $(MLX):
 
 clean:
 	@$(MAKE) -sC $(FT_DIR) clean
-	@$(MAKE) -sC $(MLX_DIR) clean
+	#@$(MAKE) -sC $(MLX_DIR) clean
 	@rm -rf $(DIR_OBJ)
 	@echo "$(RESET)$(NAME): $(RED)deleted $(DIR_OBJ)$(RESET)"
 	@echo "$(NAME): $(RED)deleted all object files$(RESET)"
 
 fclean: clean
-	@rm -f $(MLX)
-	@echo "$(NAME): $(RED)deleted $(MLX)$(RESET)"
-	@rm -f $(FT)
-	@echo "$(NAME): $(RED)deleted $(FT)$(RESET)"
+	#@rm -f $(MLX)
+	#@echo "$(NAME): $(RED)deleted $(MLX)$(RESET)"
+	#@rm -f $(FT)
+	#@echo "$(NAME): $(RED)deleted $(FT)$(RESET)"
 	@rm -f $(NAME)
 	@echo "$(NAME): $(RED)deleted ./$(NAME)$(RESET)"
 

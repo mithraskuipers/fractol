@@ -1,3 +1,6 @@
 [submodule "libftpp"]
 	path = libftpp
 	url = https://github.com/mithraskuipers/libftpp.git
+[submodule "libft"]
+	path = libft
+	url = https://github.com/mithraskuipers/libft.git
