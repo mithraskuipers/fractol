@@ -26,6 +26,9 @@
 # define RESET 15
 # define ESC 53
 
+# define HEIGHT 600
+# define WIDTH 800
+
 typedef struct s_mlx
 {
 	void		*instance;
@@ -46,10 +49,10 @@ typedef struct s_fractal
 	t_colors	colors;
 }				t_fractal;
 
-typedef struct s_game
+typedef struct s_env
 {
 	t_mlx		mlx;
 	t_fractal	fractal;
-}				t_game;
+}				t_env;
 
 #endif

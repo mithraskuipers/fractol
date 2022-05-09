@@ -14,54 +14,68 @@
 
 int		validate_input(char	*argv);
 void	exit_failure(char *s, int exit_code);
-int		get_fractal_type(t_game *game, char *argv);
-int		stop_game(t_game *game);
+int		get_fractal_type(t_env *env, char *argv);
+int		stop_env(t_env *env);
 
-int		init_fractal(t_game *game)
+int		init_fractal(t_env *env)
 {
-	game->fractal.colors.red = 0x00FF0000;
-	game->fractal.colors.green = 0x00FF00;
-	game->fractal.colors.blue = 0x0000FF;
+	env->fractal.colors.red = 0x00FF0000;
+	env->fractal.colors.green = 0x00FF00;
+	env->fractal.colors.blue = 0x0000FF;
 	return (0);
+}
+
+void	mandelbrot(t_env *env, int row, int col)
+{
+	;
+}
+
+void	pixel_loop(t_env *env, void (*f)())
+{
+	int	row;
+	int	col;
+
+	row = 0;
+	while (row < HEIGHT)
+	{
+		col = 0;
+		while (col < WIDTH)
+		{
+			f(env, row, col);
+			col++;
+		}
+		row++;
+	}
 }
 
 int		main(int argc, char **argv)
 {
-	t_game	*game;
+	t_env	*env;
 
 	if (argc != 2)
 		exit_failure("Specify whether you want the 'julia'/'mandelbrot' set.");
 	if (validate_input(argv[1]) == -1)
 		exit_failure("Specify whether you want the 'julia'/'mandelbrot' set.");
-	game = ft_calloc(1, sizeof(t_game));
-	if (!(game))
-		exit_failure("Could not allocate memory for the game struct.");
-	get_fractal_type(game, argv[1]);
-	//ft_putnbr_fd(game->fractal.type, 2);
+	env = ft_calloc(1, sizeof(t_env));
+	if (!(env))
+		exit_failure("Could not allocate memory for the env struct.");
+	get_fractal_type(env, argv[1]);
+	//ft_putnbr_fd(env->fractal.type, 2);
 
-	/*
-	mlx_ptr
-	win_ptr
-	x
-	y
-	color
-	game->fractal.colors.red = 0xFF0000;
-	*/
-
-	game->mlx.instance = mlx_init();
-	game->mlx.win = mlx_new_window(game->mlx.instance, 800, 600, "fract-ol");
-	//mlx_clear_window(game->mlx.instance, game->mlx.win);
-	//game->mlx.img = mlx_new_image(game->mlx.instance, 800, 600);
-	mlx_hook(game->mlx.win, 17, 0L, stop_game, game);
-	init_fractal(game);
-	mlx_pixel_put(game->mlx.instance, game->mlx.win, 30, 30, game->fractal.colors.red);
-	mlx_loop(game->mlx.instance);
+	env->mlx.instance = mlx_init();
+	env->mlx.win = mlx_new_window(env->mlx.instance, 800, 600, "fract-ol");
+	//mlx_clear_window(env->mlx.instance, env->mlx.win);
+	//env->mlx.img = mlx_new_image(env->mlx.instance, 800, 600);
+	mlx_hook(env->mlx.win, 17, 0L, stop_env, env);
+	init_fractal(env);
+	mlx_pixel_put(env->mlx.instance, env->mlx.win, 30, 30, env->fractal.colors.red);
+	mlx_loop(env->mlx.instance);
 	return (0);
 }
 
-int		stop_game(t_game *game)
+int		stop_env(t_env *env)
 {
-	mlx_destroy_window(game->mlx.instance, game->mlx.win);
+	mlx_destroy_window(env->mlx.instance, env->mlx.win);
 	exit(EXIT_SUCCESS);
 	return (1);
 }
@@ -69,12 +83,12 @@ int		stop_game(t_game *game)
 // 1 is mandelbrot
 // 2 is julia
 
-int		get_fractal_type(t_game *game, char *argv)
+int		get_fractal_type(t_env *env, char *argv)
 {
 	if (ft_strncmp("mandelbrot", argv, ft_strlen("mandelbrot")) == 0)
-		game->fractal.type = 1;
+		env->fractal.type = 1;
 	else if (ft_strncmp("julia", argv, ft_strlen("julia")) == 0)
-		game->fractal.type = 2;
+		env->fractal.type = 2;
 	else
 	{
 		exit_failure("Could not configure chosen fractal", EXIT_FAILURE);
