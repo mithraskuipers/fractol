@@ -6,7 +6,7 @@
 /*   By: mikuiper <mikuiper@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/02/21 13:13:32 by mikuiper      #+#    #+#                 */
-/*   Updated: 2022/03/23 12:44:25 by mikuiper      ########   odam.nl         */
+/*   Updated: 2022/05/09 13:36:03 by mikuiper      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ typedef struct s_mlx
 
 typedef struct s_colors
 {
-	int		red;
+	int red;
 	int		green;
 	int		blue;
 }				t_colors;

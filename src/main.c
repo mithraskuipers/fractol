@@ -6,16 +6,24 @@
 /*   By: mikuiper <mikuiper@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/03/22 23:32:29 by mikuiper      #+#    #+#                 */
-/*   Updated: 2022/03/23 13:25:50 by mikuiper      ########   odam.nl         */
+/*   Updated: 2022/05/09 14:32:05 by mikuiper      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
 int		validate_input(char	*argv);
-void	exit_failure(char *s);
+void	exit_failure(char *s, int exit_code);
 int		get_fractal_type(t_game *game, char *argv);
 int		stop_game(t_game *game);
+
+int		init_fractal(t_game *game)
+{
+	game->fractal.colors.red = 0x00FF0000;
+	game->fractal.colors.green = 0x00FF00;
+	game->fractal.colors.blue = 0x0000FF;
+	return (0);
+}
 
 int		main(int argc, char **argv)
 {
@@ -30,11 +38,23 @@ int		main(int argc, char **argv)
 		exit_failure("Could not allocate memory for the game struct.");
 	get_fractal_type(game, argv[1]);
 	//ft_putnbr_fd(game->fractal.type, 2);
+
+	/*
+	mlx_ptr
+	win_ptr
+	x
+	y
+	color
+	game->fractal.colors.red = 0xFF0000;
+	*/
+
 	game->mlx.instance = mlx_init();
 	game->mlx.win = mlx_new_window(game->mlx.instance, 800, 600, "fract-ol");
-	mlx_clear_window(game->mlx.instance, game->mlx.win);
-	game->mlx.img = mlx_new_image(game->mlx.instance, 800, 600);
+	//mlx_clear_window(game->mlx.instance, game->mlx.win);
+	//game->mlx.img = mlx_new_image(game->mlx.instance, 800, 600);
 	mlx_hook(game->mlx.win, 17, 0L, stop_game, game);
+	init_fractal(game);
+	mlx_pixel_put(game->mlx.instance, game->mlx.win, 30, 30, game->fractal.colors.red);
 	mlx_loop(game->mlx.instance);
 	return (0);
 }
@@ -46,13 +66,8 @@ int		stop_game(t_game *game)
 	return (1);
 }
 
-int		init_fractal(t_game *game)
-{
-	game->fractal.colors.red = 0xFF0000;
-	game->fractal.colors.green = 0x00FF00;
-	game->fractal.colors.blue = 0x0000FF;
-	return (0);
-}
+// 1 is mandelbrot
+// 2 is julia
 
 int		get_fractal_type(t_game *game, char *argv)
 {
@@ -62,7 +77,7 @@ int		get_fractal_type(t_game *game, char *argv)
 		game->fractal.type = 2;
 	else
 	{
-		exit_failure("Could not configure chosen fractal");
+		exit_failure("Could not configure chosen fractal", EXIT_FAILURE);
 		return (1);
 	}
 	return (0);
@@ -79,11 +94,11 @@ int		validate_input(char	*s)
 	return (-1);
 }
 
-void	exit_failure(char *s)
+void	exit_failure(char *s, int exit_code)
 {
 	write(2, "Error\n", 6);
 	write(2, s, ft_strlen(s));
 	write(2, "\n", 1);
 	//system("leaks fract-ol");
-	exit (EXIT_FAILURE);
+	exit (exit_code);
 }
