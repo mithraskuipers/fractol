@@ -6,11 +6,13 @@
 /*   By: mikuiper <mikuiper@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/03/22 23:32:29 by mikuiper      #+#    #+#                 */
-/*   Updated: 2022/05/09 14:32:05 by mikuiper      ########   odam.nl         */
+/*   Updated: 2022/05/10 14:16:38 by mikuiper      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
+
+# include <math.h>
 
 int		validate_input(char	*argv);
 void	exit_failure(char *s, int exit_code);
@@ -25,52 +27,60 @@ int		init_fractal(t_env *env)
 	return (0);
 }
 
-void	mandelbrot(t_env *env, int row, int col)
-{
-	;
-}
+//void	pixel_loop(t_env *env, void (*f)())
 
-void	pixel_loop(t_env *env, void (*f)())
-{
-	int	row;
-	int	col;
 
-	row = 0;
-	while (row < HEIGHT)
+
+void	pixel_loop(t_env *env)
+{
+
+
+	double MinRe = -2.0;
+	double MaxRe = 1.0;
+	double MinIm = -1.2;
+	double MaxIm = 1.2;
+	//double MaxIm = MinIm+(MaxRe-MinRe)*HEIGHT/WIDTH;
+	unsigned MaxIterations = 100;
+	double c_im;
+
+	int	y;
+	int x;
+	double Z_re2;
+	double Z_im2;
+	double Z_re;
+	double Z_im;
+	y = 0;
+	while (y < HEIGHT)
 	{
-		col = 0;
-		while (col < WIDTH)
+		c_im = MaxIm - y * (MaxIm - MinIm) / (HEIGHT - 1);
+
+		x = 0;
+		while (x < WIDTH)
 		{
-			f(env, row, col);
-			col++;
+			double c_re = MinRe + x * ((MaxRe-MinRe)/(WIDTH - 1));
+
+			Z_re = c_re;
+			Z_im = c_im;
+			int isInside = 1;
+			for(unsigned n = 0; n < MaxIterations; ++n)
+			{
+				if(sqrt(Z_re * Z_re + Z_im * Z_im) > 2)
+				{
+					isInside = 0;
+					break;
+				}
+				Z_re2 = Z_re * Z_re;
+				Z_im2 = Z_im * Z_im;
+				Z_im = 2 * Z_re * Z_im + c_im;
+				Z_re = Z_re2 - Z_im2 + c_re;
+			}
+			if(isInside) 
+				mlx_pixel_put(env->mlx.instance, env->mlx.win, x, y, env->fractal.colors.blue);
+			x++;
 		}
-		row++;
+		y++;
 	}
-}
 
-int		main(int argc, char **argv)
-{
-	t_env	*env;
-
-	if (argc != 2)
-		exit_failure("Specify whether you want the 'julia'/'mandelbrot' set.");
-	if (validate_input(argv[1]) == -1)
-		exit_failure("Specify whether you want the 'julia'/'mandelbrot' set.");
-	env = ft_calloc(1, sizeof(t_env));
-	if (!(env))
-		exit_failure("Could not allocate memory for the env struct.");
-	get_fractal_type(env, argv[1]);
-	//ft_putnbr_fd(env->fractal.type, 2);
-
-	env->mlx.instance = mlx_init();
-	env->mlx.win = mlx_new_window(env->mlx.instance, 800, 600, "fract-ol");
-	//mlx_clear_window(env->mlx.instance, env->mlx.win);
-	//env->mlx.img = mlx_new_image(env->mlx.instance, 800, 600);
-	mlx_hook(env->mlx.win, 17, 0L, stop_env, env);
-	init_fractal(env);
-	mlx_pixel_put(env->mlx.instance, env->mlx.win, 30, 30, env->fractal.colors.red);
-	mlx_loop(env->mlx.instance);
-	return (0);
 }
 
 int		stop_env(t_env *env)
@@ -90,10 +100,7 @@ int		get_fractal_type(t_env *env, char *argv)
 	else if (ft_strncmp("julia", argv, ft_strlen("julia")) == 0)
 		env->fractal.type = 2;
 	else
-	{
 		exit_failure("Could not configure chosen fractal", EXIT_FAILURE);
-		return (1);
-	}
 	return (0);
 }
 
@@ -116,3 +123,42 @@ void	exit_failure(char *s, int exit_code)
 	//system("leaks fract-ol");
 	exit (exit_code);
 }
+
+
+
+int		main(int argc, char **argv)
+{
+	t_env	*env;
+
+	if (argc != 2)
+		exit_failure("Specify whether you want the 'julia'/'mandelbrot' set.", EXIT_FAILURE);
+	if (validate_input(argv[1]) == -1)
+		exit_failure("Specify whether you want the 'julia'/'mandelbrot' set.", EXIT_FAILURE);
+	env = ft_calloc(1, sizeof(t_env));
+	if (!(env))
+		exit_failure("Could not allocate memory for the env struct.", EXIT_FAILURE);
+	get_fractal_type(env, argv[1]);
+	//ft_putnbr_fd(env->fractal.type, 2);
+	env->mlx.instance = mlx_init();
+	env->mlx.win = mlx_new_window(env->mlx.instance, 800, 600, "fract-ol");
+	//mlx_clear_window(env->mlx.instance, env->mlx.win);
+	//env->mlx.img = mlx_new_image(env->mlx.instance, 800, 600);
+	mlx_hook(env->mlx.win, 17, 0L, stop_env, env);
+	init_fractal(env);
+	pixel_loop(env);
+	//mlx_pixel_put(env->mlx.instance, env->mlx.win, 30, 30, env->fractal.colors.red);
+	mlx_loop(env->mlx.instance);
+	return (0);
+}
+
+
+/*
+x-axis:
+	dimension of real numbers
+y-axis:
+	dimension of imaginary numbers
+
+All parts of the Mandelbrot set are within this frame.
+
+http://warp.povusers.org/Mandelbrot/
+*/
