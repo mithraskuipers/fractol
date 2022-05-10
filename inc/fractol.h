@@ -6,7 +6,7 @@
 /*   By: mikuiper <mikuiper@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/02/21 13:13:32 by mikuiper      #+#    #+#                 */
-/*   Updated: 2022/05/10 13:36:22 by mikuiper      ########   odam.nl         */
+/*   Updated: 2022/05/10 17:54:18 by mikuiper      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,20 @@ typedef struct s_env
 	t_fractal	fractal;
 }				t_env;
 
+typedef struct s_env2
+{
+	double MinRe;
+	double MaxRe;
+	double MinIm;
+	double MaxIm;
+	unsigned MaxIterations;
+	double c_im;
+	double Z_re2;
+	double Z_im2;
+	double Z_re;
+	double Z_im;
+	double c_re;
+}				t_env2;
 
 
 #endif

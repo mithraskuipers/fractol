@@ -6,7 +6,7 @@
 /*   By: mikuiper <mikuiper@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/03/22 23:32:29 by mikuiper      #+#    #+#                 */
-/*   Updated: 2022/05/10 14:16:38 by mikuiper      ########   odam.nl         */
+/*   Updated: 2022/05/10 17:54:43 by mikuiper      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,48 +31,34 @@ int		init_fractal(t_env *env)
 
 
 
-void	pixel_loop(t_env *env)
+void	pixel_loop(t_env *env, t_env2 *env2)
 {
-
-
-	double MinRe = -2.0;
-	double MaxRe = 1.0;
-	double MinIm = -1.2;
-	double MaxIm = 1.2;
 	//double MaxIm = MinIm+(MaxRe-MinRe)*HEIGHT/WIDTH;
-	unsigned MaxIterations = 100;
-	double c_im;
-
 	int	y;
 	int x;
-	double Z_re2;
-	double Z_im2;
-	double Z_re;
-	double Z_im;
 	y = 0;
 	while (y < HEIGHT)
 	{
-		c_im = MaxIm - y * (MaxIm - MinIm) / (HEIGHT - 1);
+		env2->c_im = env2->MaxIm - y * (env2->MaxIm - env2->MinIm) / (HEIGHT - 1);
 
 		x = 0;
 		while (x < WIDTH)
 		{
-			double c_re = MinRe + x * ((MaxRe-MinRe)/(WIDTH - 1));
-
-			Z_re = c_re;
-			Z_im = c_im;
+			env2->c_re = env2->MinRe + x * ((env2->MaxRe-env2->MinRe)/(WIDTH - 1));
+			env2->Z_re = env2->c_re;
+			env2->Z_im = env2->c_im;
 			int isInside = 1;
-			for(unsigned n = 0; n < MaxIterations; ++n)
+			for(unsigned n = 0; n < env2->MaxIterations; ++n)
 			{
-				if(sqrt(Z_re * Z_re + Z_im * Z_im) > 2)
+				if(sqrt(env2->Z_re * env2->Z_re + env2->Z_im * env2->Z_im) > 2)
 				{
 					isInside = 0;
 					break;
 				}
-				Z_re2 = Z_re * Z_re;
-				Z_im2 = Z_im * Z_im;
-				Z_im = 2 * Z_re * Z_im + c_im;
-				Z_re = Z_re2 - Z_im2 + c_re;
+				env2->Z_re2 = env2->Z_re * env2->Z_re;
+				env2->Z_im2 = env2->Z_im * env2->Z_im;
+				env2->Z_im = 2 * env2->Z_re * env2->Z_im + env2->c_im;
+				env2->Z_re = env2->Z_re2 - env2->Z_im2 + env2->c_re;
 			}
 			if(isInside) 
 				mlx_pixel_put(env->mlx.instance, env->mlx.win, x, y, env->fractal.colors.blue);
@@ -145,7 +131,15 @@ int		main(int argc, char **argv)
 	//env->mlx.img = mlx_new_image(env->mlx.instance, 800, 600);
 	mlx_hook(env->mlx.win, 17, 0L, stop_env, env);
 	init_fractal(env);
-	pixel_loop(env);
+
+	t_env2	*env2;
+	env2 = ft_calloc(1, sizeof(t_env2));
+	env2->MinRe = -2.0;
+	env2->MaxRe = 1.0;
+	env2->MinIm = -1.2;
+	env2->MaxIm = 1.2;
+	env2->MaxIterations = 100;
+	pixel_loop(env, env2);
 	//mlx_pixel_put(env->mlx.instance, env->mlx.win, 30, 30, env->fractal.colors.red);
 	mlx_loop(env->mlx.instance);
 	return (0);
